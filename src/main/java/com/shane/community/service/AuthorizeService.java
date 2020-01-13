@@ -6,7 +6,9 @@ import com.shane.community.provider.GithubProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class AuthorizeService {
@@ -22,7 +24,7 @@ public class AuthorizeService {
 
         /**调用githubProvider.getAccessToken()方法获取accessToken*/
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
-        //System.out.println(accessToken);
+        System.out.println(accessToken);
 
         /**获取GithubUser对象*/
         GithubUser githubUser = githubProvider.getUser(accessToken);
@@ -31,9 +33,10 @@ public class AuthorizeService {
         return githubUser;
     }
 
-    public boolean githubAuthorize(GithubUser githubUser, HttpServletRequest request) {
+    public boolean githubAuthorize(GithubUser githubUser,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) {
         if (githubUser != null) {/**授权登录成功，设置session和cookie,并存储到数据库中*/
-            request.getSession().setAttribute("user", githubUser);
             Boolean githubUserExist = userService.githubUserExist(githubUser);
             //System.out.println(githubUserExist);
             if (!githubUserExist) {
@@ -43,6 +46,9 @@ public class AuthorizeService {
                 userService.updateGithubUser(githubUser);
                 //System.out.println("update");
             }
+            String token = userService.getUser(githubUser).getToken();
+            request.getSession().setAttribute("user", githubUser);
+            response.addCookie(new Cookie("token",token));
             return true;
         }
         return false;

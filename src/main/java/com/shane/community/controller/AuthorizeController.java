@@ -1,7 +1,6 @@
 package com.shane.community.controller;
 
 import com.shane.community.dto.GithubUser;
-import com.shane.community.model.User;
 import com.shane.community.service.AuthorizeService;
 import com.shane.community.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class AuthorizeController {
 
-    @Autowired
-    private UserService userService;
     @Autowired
     private AuthorizeService authorizeService;
 
@@ -38,14 +36,15 @@ public class AuthorizeController {
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
                            @RequestParam(name = "state") String state,
-                           HttpServletRequest request){
+                           HttpServletRequest request,
+                           HttpServletResponse response){
 
         GithubUser githubUser = authorizeService.getGithubUser(code,state);
 
-        boolean authorized = authorizeService.githubAuthorize(githubUser,request);
+        boolean authorized = authorizeService.githubAuthorize(githubUser,request,response);
 
         if(authorized){
-           User user = userService.getUser(githubUser);
+           //User user = userService.getUser(githubUser);
            //System.out.println(user);
            return "redirect:/";
         }else{/**登录失败*/
