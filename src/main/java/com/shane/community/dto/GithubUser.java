@@ -1,5 +1,9 @@
 package com.shane.community.dto;
 
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+
+@Component
 public class GithubUser {
     private String name;
     private long id;

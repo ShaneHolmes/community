@@ -1,5 +1,8 @@
 package com.shane.community.dto;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class AccessTokenDTO {
     private String client_id;
     private String client_secret;
