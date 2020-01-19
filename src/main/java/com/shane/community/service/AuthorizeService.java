@@ -2,6 +2,7 @@ package com.shane.community.service;
 
 import com.shane.community.dto.AccessTokenDTO;
 import com.shane.community.dto.GithubUser;
+import com.shane.community.model.User;
 import com.shane.community.provider.GithubProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @Service
 public class AuthorizeService {
@@ -46,7 +48,9 @@ public class AuthorizeService {
                 userService.updateGithubUser(githubUser);
                 //System.out.println("update");
             }
-            String token = userService.getUser(githubUser).getToken();
+
+            List<User> users = userService.getUser(githubUser);
+            String token = users.get(0).getToken();
             request.getSession().setAttribute("user", githubUser);
             response.addCookie(new Cookie("token",token));
             return true;
